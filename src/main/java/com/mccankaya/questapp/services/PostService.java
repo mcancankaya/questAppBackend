@@ -1,11 +1,16 @@
 package com.mccankaya.questapp.services;
 
+import com.mccankaya.questapp.entities.Like;
 import com.mccankaya.questapp.entities.Post;
 import com.mccankaya.questapp.entities.User;
 import com.mccankaya.questapp.repos.PostRepository;
 import com.mccankaya.questapp.requests.PostCreateRequest;
 import com.mccankaya.questapp.requests.PostUpdateRequest;
+import com.mccankaya.questapp.responses.LikeResponse;
 import com.mccankaya.questapp.responses.PostResponse;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,14 +21,16 @@ import java.util.stream.Collectors;
 public class PostService {
     private PostRepository postRepository;
     private UserService userService;
+    private LikeService likeService;
 
     public PostService(PostRepository postRepository, UserService userService) {
         this.postRepository = postRepository;
         this.userService = userService;
     }
 
-    public Post createPost() {
-        return null;
+    @Autowired
+    public void setLikeService(LikeService likeService) {
+        this.likeService = likeService;
     }
 
     public List<PostResponse> getAllPosts(Optional<Long> userId) {
@@ -33,7 +40,10 @@ public class PostService {
         } else {
             postList = postRepository.findAll();
         }
-        return postList.stream().map(PostResponse::new).collect(Collectors.toList());
+        return postList.stream().map( post -> {
+           List<LikeResponse> likes =  likeService.getAllLikesWithParam(Optional.ofNullable(null), Optional.of( post.getId()));
+           return new PostResponse(post,likes);
+        }).collect(Collectors.toList());
 
     }
 

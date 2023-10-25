@@ -5,10 +5,12 @@ import com.mccankaya.questapp.entities.User;
 import com.mccankaya.questapp.repos.PostRepository;
 import com.mccankaya.questapp.requests.PostCreateRequest;
 import com.mccankaya.questapp.requests.PostUpdateRequest;
+import com.mccankaya.questapp.responses.PostResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -24,11 +26,15 @@ public class PostService {
         return null;
     }
 
-    public List<Post> getAllPosts(Optional<Long> userId) {
+    public List<PostResponse> getAllPosts(Optional<Long> userId) {
+        List<Post> postList;
         if (userId.isPresent()) {
-            return postRepository.findByUserId(userId.get());
-        } else
-            return postRepository.findAll();
+            postList = postRepository.findByUserId(userId.get());
+        } else {
+            postList = postRepository.findAll();
+        }
+        return postList.stream().map(PostResponse::new).collect(Collectors.toList());
+
     }
 
     public Post getOnePostById(Long postId) {

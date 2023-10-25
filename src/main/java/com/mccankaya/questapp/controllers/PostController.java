@@ -3,6 +3,7 @@ package com.mccankaya.questapp.controllers;
 import com.mccankaya.questapp.entities.Post;
 import com.mccankaya.questapp.requests.PostCreateRequest;
 import com.mccankaya.questapp.requests.PostUpdateRequest;
+import com.mccankaya.questapp.responses.PostResponse;
 import com.mccankaya.questapp.services.PostService;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class PostController {
     }
 
     @GetMapping
-    public List<Post> getAllPosts(@RequestParam Optional<Long> userId){
+    public List<PostResponse> getAllPosts(@RequestParam Optional<Long> userId){
         return postService.getAllPosts(userId);
     }
 

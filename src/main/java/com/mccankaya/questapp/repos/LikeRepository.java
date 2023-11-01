@@ -1,7 +1,10 @@
 package com.mccankaya.questapp.repos;
 
+import com.mccankaya.questapp.entities.Comment;
 import com.mccankaya.questapp.entities.Like;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -11,4 +14,7 @@ public interface LikeRepository extends JpaRepository<Like,Long> {
     List<Like> findByUserId(Long userId);
 
     List<Like> findByPostId(Long postId);
+
+    @Query(nativeQuery = true, value = "select 'liked',l.post_id, u.avatar_id, u.user_name from p_like l left join users u on u.id = l.user_id where l.post_id in :postIds limit 5")
+    List<Object> findUserLikesByPostId(@Param("postIds") List<Long> postIds);
 }

@@ -1,7 +1,10 @@
 package com.mccankaya.questapp.controllers;
 
 import com.mccankaya.questapp.entities.User;
+import com.mccankaya.questapp.exceptions.UserNotFoundException;
+import com.mccankaya.questapp.responses.UserResponse;
 import com.mccankaya.questapp.services.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,9 +29,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getOneUser(@PathVariable Long userId) {
-        //CustomException
-        return userService.getOneUserById(userId);
+    public UserResponse getOneUser(@PathVariable Long userId) {
+        User user = userService.getOneUserById(userId);
+        if (user ==null){
+            throw new UserNotFoundException("User not found.");
+        }
+        return new UserResponse(userService.getOneUserById(userId));
     }
 
     @PutMapping("/{userId}")
@@ -39,5 +45,16 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public void deleteOneUser(@PathVariable Long userId) {
         userService.deleteById(userId);
+    }
+
+    @GetMapping("/activity/{userId}")
+    public List<Object> getUserActivity(@PathVariable Long userId){
+        return userService.getUserActivity(userId);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private void handleUserNotFoundException(){
+
     }
 }
